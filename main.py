@@ -1,9 +1,14 @@
 import argparse
 import csv
+import hashlib
 
 from processo import Processo
 import plotly.figure_factory as ff
 import pandas as pd
+
+def colFromStr(inputString):
+    hashedString = hashlib.sha256(inputString.encode())
+    return hashedString.hexdigest()[len(hashedString.hexdigest())-6:]
 
 def take_time(elem):
     return elem.dur
@@ -42,6 +47,10 @@ with open(args.filename) as csv_file:
 queue = []
 order = []
 time_count = 0
+colours = []
+for key in processes:
+    colour = colFromStr(str(key))
+    colours.append(f"#{colour}")
 if args.fcfs:
     title = "First Come, First Served"
     while processes or queue:
@@ -116,6 +125,7 @@ df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Resource'])
 for i in range(len(order)):
     if order[i] != 0:
         df = df._append(dict(Task=str(order[i]), Start=i, Finish= i+1, Resource=str(order[i])),ignore_index=True)
-fig = ff.create_gantt(df, index_col = 'Task',  bar_width = 0.4, show_colorbar=True, group_tasks= True,title=title)
+fig = ff.create_gantt(df, index_col = 'Task',  bar_width = 0.4, show_colorbar=True, group_tasks= True, title=title,
+                      colors=colours,)
 fig.update_layout(xaxis_type='linear')
 fig.show()
