@@ -43,6 +43,7 @@ queue = []
 order = []
 time_count = 0
 if args.fcfs:
+    title = "First Come, First Served"
     while processes or queue:
         if queue:
             if queue[0].time_left == 0:
@@ -58,6 +59,7 @@ if args.fcfs:
             queue[0].time_left -= 1
         time_count += 1
 elif args.sjf:
+    title = "Shortest Job First"
     while processes or queue:
         for process in processes:
             if time_count >= process.ini:
@@ -73,6 +75,7 @@ elif args.sjf:
                 time_count += 1
             queue.pop(0)
 elif args.roundrobin:
+    title = "Round-Robin"
     for process in processes:
         if time_count >= process.ini:
             queue.append(process)
@@ -113,6 +116,6 @@ df = pd.DataFrame(columns=['Task', 'Start', 'Finish', 'Resource'])
 for i in range(len(order)):
     if order[i] != 0:
         df = df._append(dict(Task=str(order[i]), Start=i, Finish= i+1, Resource=str(order[i])),ignore_index=True)
-fig = ff.create_gantt(df, index_col = 'Task',  bar_width = 0.4, show_colorbar=True, group_tasks= True)
+fig = ff.create_gantt(df, index_col = 'Task',  bar_width = 0.4, show_colorbar=True, group_tasks= True,title=title)
 fig.update_layout(xaxis_type='linear')
 fig.show()
